@@ -967,7 +967,7 @@ def runMultiple(times):
     for p in ax.patches:
         ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
 
-    plt.show(block=True)
+    plot.show(block=True)
 
 def showExample():
     global current_algorithm
@@ -994,6 +994,6 @@ def showExample():
     current_algorithm = None  # Clear the algorithm name after running all algorithms
 
 
-#runMultiple(5)
+runMultiple(5)
 #main()
-showExample()
+# showExample()
