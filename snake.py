@@ -462,6 +462,36 @@ allCalcCosts = [[],[],[],[]]
 # all average score, calculated once
 averageCalcCosts = [[],[],[],[]]
 
+# --------- Các code chung từ các hàm thuật toán ---------- #
+
+width = 500
+rows = 20
+win = pygame.display.set_mode((width, width))  
+
+def performActions(dirs, slow,s, win, clock):
+    """Thực hiện các hành động và cập nhật màn hình"""
+    for action in dirs:
+        if slow:
+            pygame.time.delay(50)
+            clock.tick(10)
+        s.moveAuto(action)
+        redrawWindow(win, s)
+        pygame.display.update()  # Cập nhật màn hình mà không cần tạo lại
+         
+
+def initialize_search(i):
+    """Thiết lập các cài đặt chung như kích thước màn hình, vị trí bắt đầu, và thức ăn"""
+    # global width, rows, snack, tempFood, startState
+    # width = 500
+    # rows = 20
+    # win = pygame.display.set_mode((width, width))
+    global snack, tempFood, startState
+    startState = START_POS
+    snack = cube(FOOD_POS[i], color=(0, 255, 0))
+    tempFood = snack
+    clock = pygame.time.Clock()
+    #return win, clock
+    return clock
 
 # --------------------------------------------------------------------- DFS
 
@@ -470,23 +500,26 @@ averageCalcCosts = [[],[],[],[]]
 # slow: True go slow False go fast
 def dfs_search(s, i, slow):
     from util import Stack
-    global width, rows, snack, tempFood, startState, food
+    #global width, rows, snack, tempFood, startState, food
 
-    def performActions(dirs, slow):
-        for action in dirs:
-            if slow:
-                pygame.time.delay(50)
-                clock.tick(10)
-            s.moveAuto(action)
-            redrawWindow(win, s)
+    # def performActions(dirs, slow):
+    #     for action in dirs:
+    #         if slow:
+    #             pygame.time.delay(50)
+    #             clock.tick(10)
+    #         s.moveAuto(action)
+    #         redrawWindow(win, s)
 
-    width = 500
-    rows = 20
-    win = pygame.display.set_mode((width, width))
-    startState = START_POS
-    snack = cube(FOOD_POS[i], color=(0, 255, 0))
-    tempFood = snack
-    clock = pygame.time.Clock()
+    # width = 500
+    # rows = 20
+    # win = pygame.display.set_mode((width, width))
+    # startState = START_POS
+    # snack = cube(FOOD_POS[i], color=(0, 255, 0))
+    # tempFood = snack
+    # clock = pygame.time.Clock()
+    
+    clock = initialize_search(i)
+    
     flag = True
 
     dfs_stack = Stack()  # fringe
@@ -504,7 +537,7 @@ def dfs_search(s, i, slow):
             if s.isGoalState(current):
                 s.score += 1
                 s.addCube()
-                performActions(directions, slow)
+                performActions(directions, slow,s, win, clock)
                 # print("DFS number of actions:", len(directions))
                 actionsList[0].append(len(directions))
                 # print("DFS score:", len(s.body))
@@ -527,23 +560,26 @@ def dfs_search(s, i, slow):
 # slow: True go slow False go fast
 def bfs_search(s, i, slow):
     from util import Queue
-    global width, rows, snack, tempFood, startState, food
+    # global width, rows, snack, tempFood, startState, food
 
-    def performActions(dirs, slow):
-        for action in dirs:
-            if slow:
-                pygame.time.delay(50)
-                clock.tick(10)
-            s.moveAuto(action)
-            redrawWindow(win, s)
+    # def performActions(dirs, slow):
+    #     for action in dirs:
+    #         if slow:
+    #             pygame.time.delay(50)
+    #             clock.tick(10)
+    #         s.moveAuto(action)
+    #         redrawWindow(win, s)
 
-    width = 500
-    rows = 20
-    win = pygame.display.set_mode((width, width))
-    startState = START_POS
-    snack = cube(FOOD_POS[i], color=(0, 255, 0))
-    tempFood = snack
-    clock = pygame.time.Clock()
+    # width = 500
+    # rows = 20
+    # win = pygame.display.set_mode((width, width))
+    # startState = START_POS
+    # snack = cube(FOOD_POS[i], color=(0, 255, 0))
+    # tempFood = snack
+    # clock = pygame.time.Clock()
+    
+    clock = initialize_search(i)
+    
     flag = True
 
     bfs_queue = Queue()  # fringe
@@ -560,7 +596,7 @@ def bfs_search(s, i, slow):
             if s.isGoalState(current):
                 s.score += 1
                 s.addCube()
-                performActions(directions, slow)
+                performActions(directions, slow,s,win,clock)
                 # print("BFS number of actions:", len(directions))
                 actionsList[1].append(len(directions))
                 # print("BFS score:", len(s.body))
@@ -583,7 +619,7 @@ def bfs_search(s, i, slow):
 # slow: True go slow False go fast
 def aStar_search(s, i, slow):
     from util import Queue
-    global width, rows, snack, tempFood, startState, food
+    # global width, rows, snack, tempFood, startState, food
 
     def nullHeuristic(state, problem=None):
         # trivial heuristic
@@ -595,22 +631,25 @@ def aStar_search(s, i, slow):
         xy2 = tempFood.pos
         return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
-    def performActions(dirs, slow):
-        # perform actions in the game window so we can see the results
-        for action in dirs:
-            if slow:
-                pygame.time.delay(50)
-                clock.tick(10)
-            s.moveAuto(action)
-            redrawWindow(win, s)
+    # def performActions(dirs, slow):
+    #     # perform actions in the game window so we can see the results
+    #     for action in dirs:
+    #         if slow:
+    #             pygame.time.delay(50)
+    #             clock.tick(10)
+    #         s.moveAuto(action)
+    #         redrawWindow(win, s)
 
-    width = 500
-    rows = 20
-    win = pygame.display.set_mode((width, width))
-    startState = START_POS
-    snack = cube(FOOD_POS[i], color=(0, 255, 0))
-    tempFood = snack
-    clock = pygame.time.Clock()
+    # width = 500
+    # rows = 20
+    # win = pygame.display.set_mode((width, width))
+    # startState = START_POS
+    # snack = cube(FOOD_POS[i], color=(0, 255, 0))
+    # tempFood = snack
+    # clock = pygame.time.Clock()
+    
+    clock = initialize_search(i)
+    
     flag = True
 
     from util import PriorityQueue
@@ -629,7 +668,7 @@ def aStar_search(s, i, slow):
             if s.isGoalState(current):
                 s.score += 1
                 s.addCube()
-                performActions(directions, slow)
+                performActions(directions, slow,s,win,clock)
                 # print("A_Star number of actions:", len(directions))
                 actionsList[2].append(len(directions))
                 # print("A_Star score:", len(s.body))
@@ -653,7 +692,7 @@ def aStar_search(s, i, slow):
 # slow: True go slow False go fast
 def bestFirstSearch(s, i, slow):
     from util import Queue
-    global width, rows, snack, tempFood, startState, food
+    #global width, rows, snack, tempFood, startState, food
 
     def manhattanHeuristic(position):
         # Heuristic using Manhattan distance to the food
@@ -661,22 +700,25 @@ def bestFirstSearch(s, i, slow):
         xy2 = tempFood.pos
         return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
-    def performActions(dirs, slow):
-        # Perform actions in the game window to visualize the path
-        for action in dirs:
-            if slow:
-                pygame.time.delay(50)
-                clock.tick(10)
-            s.moveAuto(action)
-            redrawWindow(win, s)
+    # def performActions(dirs, slow):
+    #     # Perform actions in the game window to visualize the path
+    #     for action in dirs:
+    #         if slow:
+    #             pygame.time.delay(50)
+    #             clock.tick(10)
+    #         s.moveAuto(action)
+    #         redrawWindow(win, s)
 
-    width = 500
-    rows = 20
-    win = pygame.display.set_mode((width, width))
-    startState = START_POS
-    snack = cube(FOOD_POS[i], color=(0, 255, 0))
-    tempFood = snack
-    clock = pygame.time.Clock()
+    # width = 500
+    # rows = 20
+    # win = pygame.display.set_mode((width, width))
+    # startState = START_POS
+    # snack = cube(FOOD_POS[i], color=(0, 255, 0))
+    # tempFood = snack
+    # clock = pygame.time.Clock()
+    
+    clock = initialize_search(i)
+    
     flag = True
 
     from util import PriorityQueue
@@ -692,7 +734,7 @@ def bestFirstSearch(s, i, slow):
             if s.isGoalState(current):
                 s.score += 1
                 s.addCube()
-                performActions(directions, slow)
+                performActions(directions, slow,s,win,clock)
                 actionsList[3].append(len(directions))
                 scoreList[3] = len(s.body)
                 return  # Goal reached, exit function
@@ -711,24 +753,27 @@ def bestFirstSearch(s, i, slow):
 # slow: True go slow False go fast
 def ucs_search(s, i, slow):
     from util import Queue
-    global width, rows, snack, tempFood, startState, food
+    #global width, rows, snack, tempFood, startState, food
 
-    def performActions(dirs, slow):
-        # perform actions in the game window so we can see the results
-        for action in dirs:
-            if slow:
-                pygame.time.delay(50)
-                clock.tick(10)
-            s.moveAuto(action)
-            redrawWindow(win, s)
+    # def performActions(dirs, slow):
+    #     # perform actions in the game window so we can see the results
+    #     for action in dirs:
+    #         if slow:
+    #             pygame.time.delay(50)
+    #             clock.tick(10)
+    #         s.moveAuto(action)
+    #         redrawWindow(win, s)
 
-    width = 500
-    rows = 20
-    win = pygame.display.set_mode((width, width))
-    startState = START_POS
-    snack = cube(FOOD_POS[i], color=(0, 255, 0))
-    tempFood = snack
-    clock = pygame.time.Clock()
+    # width = 500
+    # rows = 20
+    # win = pygame.display.set_mode((width, width))
+    # startState = START_POS
+    # snack = cube(FOOD_POS[i], color=(0, 255, 0))
+    # tempFood = snack
+    # clock = pygame.time.Clock()
+    
+    clock = initialize_search(i)
+    
     flag = True
 
     from util import PriorityQueue
@@ -747,7 +792,7 @@ def ucs_search(s, i, slow):
             if s.isGoalState(current):
                 s.score += 1
                 s.addCube()
-                performActions(directions, slow)
+                performActions(directions, slow,s,win,clock)
                 # print("A_Star number of actions:", len(directions))
                 actionsList[3].append(len(directions))
                 # print("A_Star score:", len(s.body))
@@ -994,6 +1039,6 @@ def showExample():
     current_algorithm = None  # Clear the algorithm name after running all algorithms
 
 
-runMultiple(5)
+#runMultiple(5)
 #main()
-# showExample()
+showExample()
