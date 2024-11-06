@@ -1,10 +1,3 @@
-# CSCI 4478 - Dr Vahid Behzadan
-# Name: game.py
-# Description: Classes to run a game of snake
-# Reference: https://www.youtube.com/watch?v=CD4qAhfFuLo&t=1734s
-# Reference: https://pastebin.com/embed_js/jB6k06hG
-# Revision: 4/22/2021
-
 import math
 import random
 
@@ -453,14 +446,14 @@ def foodPos():
         FOOD_POS.append(food)
 # FOOD_POS = [(10, 0), (0, 10), (10, 0), (0, 10), (10, 0)]
 
-actionsList = [[], [], [], []]
-scoreList = [0, 0, 0, 0]
+actionsList = [[], [], [], [], []]
+scoreList = [0, 0, 0, 0, 0]
 
 # all calculated score, maintain over multiple runs
-allCalcCosts = [[],[],[],[]]
+allCalcCosts = [[],[],[],[],[]]
 
 # all average score, calculated once
-averageCalcCosts = [[],[],[],[]]
+averageCalcCosts = [[],[],[],[],[]]
 
 # --------- Các code chung từ các hàm thuật toán ---------- #
 
@@ -735,8 +728,8 @@ def bestFirstSearch(s, i, slow):
                 s.score += 1
                 s.addCube()
                 performActions(directions, slow,s,win,clock)
-                actionsList[3].append(len(directions))
-                scoreList[3] = len(s.body)
+                actionsList[4].append(len(directions))
+                scoreList[4] = len(s.body)
                 return  # Goal reached, exit function
 
             for childNode, direction, _ in s.getSuccessors(current):
@@ -830,6 +823,8 @@ def runSearch(run):
     print("RUNNING UCS#", run)
     for i in range(0, len(FOOD_POS)):
         ucs_search(mySnake, i, goSlow)
+    for i in range(0, len(FOOD_POS)):
+        bestFirstSearch(mySnake, i, goSlow)
     mySnake.reset(START_POS)
 
     # -------------------------------------------------------------- Calculate new scores
@@ -839,27 +834,32 @@ def runSearch(run):
     BFS_actions = sum(actionsList[1])
     AStar_actions = sum(actionsList[2])
     UCS_actions = sum(actionsList[3])
+    bestFirstSearch_actions = sum(actionsList[4])
     print("Total DFS actions taken:", DFS_actions)
     print("Total BFS actions taken:", BFS_actions)
     print("Total A_Star actions taken:", AStar_actions)
     print("Total UCS actions taken:", UCS_actions)
+    print("Total Best First Search actions taken:", bestFirstSearch_actions)
 
-    print("RAW SCORES [ DFS, BFS, ASTAR, UCS ]: ")
+    print("RAW SCORES [ DFS, BFS, ASTAR, UCS, Best First Search ]: ")
     print(scoreList)
     calcScores = [0, 0, 0, 0]
     calcScores[0] = (scoreList[0] / DFS_actions) * 100
     calcScores[1] = (scoreList[1] / BFS_actions) * 100
     calcScores[2] = (scoreList[2] / AStar_actions) * 100
     calcScores[3] = (scoreList[3] / UCS_actions) * 100
+    calcScores[4] = (scoreList[4] / bestFirstSearch_actions) * 100
     print("DFS score:", calcScores[0])
     print("BFS score:", calcScores[1])
     print("A_Star score:", calcScores[2])
     print("UCS score:", calcScores[3])
+    print("Best First Search score:", calcScores[4])
 
     allCalcCosts[0].append(calcScores[0])
     allCalcCosts[1].append(calcScores[1])
     allCalcCosts[2].append(calcScores[2])
     allCalcCosts[3].append(calcScores[3])
+    allCalcCosts[4].append(calcScores[4])
 
     # -------------------------------------------------------------- Write to file
 
@@ -869,20 +869,23 @@ def runSearch(run):
     my_file.write('{0:10}  {1:14}\n'.format("DFS ACTIONS:", DFS_actions))
     my_file.write('{0:10}  {1:14}\n'.format("ASTAR ACTIONS:", AStar_actions))
     my_file.write('{0:10}  {1:14}\n\n'.format("UCS ACTIONS:", UCS_actions))
+    my_file.write('{0:10}  {1:14}\n\n'.format("Best First Search ACTIONS:", bestFirstSearch_actions))
 
     my_file.write('{0:10}  {1:14}\n'.format("RAW BFS SCORE:", scoreList[0]))
     my_file.write('{0:10}  {1:14}\n'.format("RAW DFS SCORE:", scoreList[1]))
     my_file.write('{0:10}  {1:14}\n'.format("RAW ASTAR SCORE:", scoreList[2]))
     my_file.write('{0:10}  {1:14}\n\n'.format("RAW UCS SCORE:", scoreList[3]))
+    my_file.write('{0:10}  {1:14}\n\n'.format("RAW Best First Search SCORE:", scoreList[4]))
 
     my_file.write('{0:10}  {1:14}\n'.format("CALC BFS SCORE:", calcScores[0]))
     my_file.write('{0:10}  {1:14}\n'.format("CALC DFS SCORE:", calcScores[1]))
     my_file.write('{0:10}  {1:14}\n'.format("CALC ASTAR SCORE:", calcScores[2]))
     my_file.write('{0:10}  {1:14}\n\n'.format("CALC UCS SCORE:", calcScores[3]))
+    my_file.write('{0:10}  {1:14}\n\n'.format("CALC Best First Search SCORE:", calcScores[4]))
     my_file.close()
 
     # -------------------------------------------------------------- Bar Graph for Scores
-    data = {"Algorithm": ["DFS", "BFS", "ASTAR", "UCS"],
+    data = {"Algorithm": ["DFS", "BFS", "ASTAR", "UCS", "Best First Search"],
 
             "Score": [round(x,2) for x in calcScores]
 
@@ -903,6 +906,7 @@ def runSearch(run):
     print(len(actionsList[1]))
     print(len(actionsList[2]))
     print(len(actionsList[3]))
+    print(len(actionsList[4]))
 
     maxLen = max(len(actionsList[0]),len(actionsList[1]),len(actionsList[2]),len(actionsList[3]))
     # Using our actionsList lists we need to assign zeros where there are no slots
@@ -915,6 +919,8 @@ def runSearch(run):
             actionsList[2].append(0)
         if len(actionsList[3]) < maxLen+1:
             actionsList[3].append(0)
+        if len(actionsList[4]) < maxLen+1:
+            actionsList[4].append(0)
 
 
     scoreIdx = [x for x in range(0,maxLen+1)]
@@ -974,6 +980,21 @@ def runSearch(run):
     data = {"Score": scoreIdx,
 
             "UCS": actionsList[3]
+
+            }
+    # Dictionary loaded into a DataFrame
+    dataFrame = pd.DataFrame(data=data)
+    # Draw a vertical bar chart
+    dataFrame.plot(kind='line',x="Score", y="UCS", rot=70,
+                       title="Actions of Snake Game Search Algorithms " + str(run) + " " +str(datetime.now()))
+
+    plot.show(line=True)
+    
+    # -------------------------------------------------------------- Best First Search Line Graph for Actions
+
+    data = {"Score": scoreIdx,
+
+            "Greedy": actionsList[4]
 
             }
     # Dictionary loaded into a DataFrame
