@@ -800,7 +800,7 @@ def ucs_search(s, i, slow):
 # run: run number of the routine
 def runSearch(run):
     global actionsList
-    actionsList= [[],[],[],[]]
+    actionsList= [[],[],[],[],[]]
 
     mySnake = snake((255, 0, 0), START_POS)
 
@@ -823,6 +823,8 @@ def runSearch(run):
     print("RUNNING UCS#", run)
     for i in range(0, len(FOOD_POS)):
         ucs_search(mySnake, i, goSlow)
+    mySnake.reset(START_POS)
+    print("RUNNING Best First Search#", run)
     for i in range(0, len(FOOD_POS)):
         bestFirstSearch(mySnake, i, goSlow)
     mySnake.reset(START_POS)
@@ -843,7 +845,7 @@ def runSearch(run):
 
     print("RAW SCORES [ DFS, BFS, ASTAR, UCS, Best First Search ]: ")
     print(scoreList)
-    calcScores = [0, 0, 0, 0]
+    calcScores = [0, 0, 0, 0, 0]
     calcScores[0] = (scoreList[0] / DFS_actions) * 100
     calcScores[1] = (scoreList[1] / BFS_actions) * 100
     calcScores[2] = (scoreList[2] / AStar_actions) * 100
@@ -868,19 +870,19 @@ def runSearch(run):
     my_file.write('{0:10}  {1:14}\n'.format("BFS ACTIONS:", BFS_actions))
     my_file.write('{0:10}  {1:14}\n'.format("DFS ACTIONS:", DFS_actions))
     my_file.write('{0:10}  {1:14}\n'.format("ASTAR ACTIONS:", AStar_actions))
-    my_file.write('{0:10}  {1:14}\n\n'.format("UCS ACTIONS:", UCS_actions))
+    my_file.write('{0:10}  {1:14}\n'.format("UCS ACTIONS:", UCS_actions))
     my_file.write('{0:10}  {1:14}\n\n'.format("Best First Search ACTIONS:", bestFirstSearch_actions))
 
     my_file.write('{0:10}  {1:14}\n'.format("RAW BFS SCORE:", scoreList[0]))
     my_file.write('{0:10}  {1:14}\n'.format("RAW DFS SCORE:", scoreList[1]))
     my_file.write('{0:10}  {1:14}\n'.format("RAW ASTAR SCORE:", scoreList[2]))
-    my_file.write('{0:10}  {1:14}\n\n'.format("RAW UCS SCORE:", scoreList[3]))
+    my_file.write('{0:10}  {1:14}\n'.format("RAW UCS SCORE:", scoreList[3]))
     my_file.write('{0:10}  {1:14}\n\n'.format("RAW Best First Search SCORE:", scoreList[4]))
 
     my_file.write('{0:10}  {1:14}\n'.format("CALC BFS SCORE:", calcScores[0]))
     my_file.write('{0:10}  {1:14}\n'.format("CALC DFS SCORE:", calcScores[1]))
     my_file.write('{0:10}  {1:14}\n'.format("CALC ASTAR SCORE:", calcScores[2]))
-    my_file.write('{0:10}  {1:14}\n\n'.format("CALC UCS SCORE:", calcScores[3]))
+    my_file.write('{0:10}  {1:14}\n'.format("CALC UCS SCORE:", calcScores[3]))
     my_file.write('{0:10}  {1:14}\n\n'.format("CALC Best First Search SCORE:", calcScores[4]))
     my_file.close()
 
@@ -908,7 +910,7 @@ def runSearch(run):
     print(len(actionsList[3]))
     print(len(actionsList[4]))
 
-    maxLen = max(len(actionsList[0]),len(actionsList[1]),len(actionsList[2]),len(actionsList[3]))
+    maxLen = max(len(actionsList[0]),len(actionsList[1]),len(actionsList[2]),len(actionsList[3]),len(actionsList[4]))
     # Using our actionsList lists we need to assign zeros where there are no slots
     for x in range(0,maxLen):
         if len(actionsList[0]) < maxLen+1:
@@ -1060,6 +1062,6 @@ def showExample():
     current_algorithm = None  # Clear the algorithm name after running all algorithms
 
 
-#runMultiple(5)
+runMultiple(3)
 #main()
-showExample()
+#showExample()
